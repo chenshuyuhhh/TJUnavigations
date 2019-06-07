@@ -1,6 +1,7 @@
 package com.chenshuyusc.tjunavigations.util
 
 import com.chenshuyusc.tjunavigations.entity.Node
+import com.chenshuyusc.tjunavigations.entity.NodePath
 import java.io.File
 
 /**
@@ -9,7 +10,7 @@ import java.io.File
 object NodeUtils {
 
     private val nodeSet = mutableSetOf<Node>()
-
+    private val nodePaths = mutableListOf<NodePath>()
 
     /**
      * 获得所有结点的信息

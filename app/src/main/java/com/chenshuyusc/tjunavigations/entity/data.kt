@@ -9,9 +9,9 @@ package com.chenshuyusc.tjunavigations.entity
  * 边的详细信息类
  */
 data class EdgeInfo(
-    val p:String,
+    val p: String,
     val node1: Node,
-    val node2:Node,
+    val node2: Node,
     val distance: String,
     val duration: String
 )
@@ -25,13 +25,22 @@ data class AdjacencyNode(
 )
 
 /**
- * 简化信息的邻接矩阵
+ * 简化信息的邻接矩阵,不带权值
  */
 data class SimpleAdj(
     val node: Int,
     val nodes: Set<Int>
 )
 
+/**
+ * 存放上一个结点
+ * 和权重
+ */
+data class Info(
+    val node: Int,
+    val w: Double,
+    val t:Double
+)
 
 /**
  * 存放Json解析对应的数据类

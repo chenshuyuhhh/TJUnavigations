@@ -14,16 +14,15 @@ object Graph {
      * 邻接矩阵图
      */
     // 步行图
-    private val adjsWalk = HashMap<Node, HashMap<Node, String>>()
+    val adjsWalk = HashMap<Node, HashMap<Node, String>>()
 
     // 驾车图
-    private val adjsCar = HashMap<Node, HashMap<Node, String>>()
+    val adjsCar = HashMap<Node, HashMap<Node, String>>()
 
     /**
      * 获得步行的邻接矩阵图和驾车的邻接图
      */
-    @JvmStatic
-    fun main(args: Array<String>) {
+    fun get() {
         repeat(edges.size) { i ->
             // 不论什么标志位，步行一定可以
             val edge = edges[i]
@@ -64,7 +63,7 @@ object Graph {
 
         // 如果这个结点2已经被存过了
         this[node2]?.let {
-            it.put(node2, dd)
+            it.put(node1, dd)
         }
     }
 }
