@@ -10,20 +10,20 @@ import java.io.File
 object NodeUtils {
 
     private val nodeSet = mutableSetOf<Node>()
+
     private val nodePaths = mutableListOf<NodePath>()
 
     /**
      * 获得所有结点的信息
      */
-    init {
-        val lines = File("app/src/main/res/raw/mytjumap.csv").readLines(Charsets.UTF_8)
+    fun getNodes(lines:List<String>) {
+       // val lines = File("app/src/main/res/raw/mytjumap.csv").readLines(Charsets.UTF_8)
         repeat(lines.size) { i ->
             if (i > 0) {
                 val strs = lines[i].split(",")
                 nodeSet.add(Node(strs[0].toInt(), strs[1] + "," + strs[2], strs[3]))
             }
         }
-        println(nodeSet.size)
     }
 
     /**
@@ -47,5 +47,12 @@ object NodeUtils {
                 return node
         }
         return null
+    }
+
+    public fun getNumberByName(name: String): Int {
+        nodeSet.forEach { node ->
+            if (node.name == name) return node.number
+        }
+        return 0
     }
 }

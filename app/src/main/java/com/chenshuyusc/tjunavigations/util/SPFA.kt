@@ -20,18 +20,19 @@ object SPFA {
      *   3）在这期间可以记录这个节点的进队次数，判断是否存在负环。
      * 4.直到队空。
      */
-    @JvmStatic
-    fun main(args: Array<String>) {
-        Graph.get()
-        getPaths(Graph.adjsCar, 1, 62)
-    }
+//    @JvmStatic
+//    fun main(args: Array<String>) {
+//        Graph.get()
+//        val infos = getPaths(Graph.adjsWalk, 93, 14)
+//        println(infos.size)
+//    }
 
     /**
      * 邻接矩阵
      * n1：起始点
      * n2：结束点
      */
-    fun getPaths(map: HashMap<Node, HashMap<Node, String>>, n1: Int, n2: Int) {
+    fun getPaths(map: HashMap<Node, HashMap<Node, String>>, n1: Int, n2: Int): List<Info> {
 
         // 权重记录表
         val table = arrayOfNulls<Info>(108)
@@ -43,6 +44,7 @@ object SPFA {
         queue.add(NodeUtils.getNodeByNumber(n1))
         table[n1] = Info(n1, 0.0, 0.0)
 
+        // 找出其他结点到 n1 的最短路径
         // 如果队列不为空，则循环
         while (queue.isNotEmpty()) {
 
@@ -69,7 +71,7 @@ object SPFA {
                     // 如果表中的该元素是null，说明是 ∞
                     if (table[temp.key.number] == null) {
                         // 更新表
-                        table[temp.key.number] = Info(head.number, headW + dw, headT + dt)
+                        table[temp.key.number] = Info(head.number, headW + dw, dt)
                         // 将被松弛的元素加入队列中
                         queue.add(NodeUtils.getNodeByNumber(temp.key.number))
                     } else {
@@ -77,12 +79,35 @@ object SPFA {
                             // 本来的权重
                             val weight0 = info.w
                             if (weight0 > dw + headW) {
-                                table[temp.key.number] = Info(head.number, dw + headW, dt + headT)
+                                table[temp.key.number] = Info(head.number, dw + headW, headT)
                                 queue.add(NodeUtils.getNodeByNumber(temp.key.number))
                             }
                         }
                     }
                 }
+            }
+        }
+
+        val infos = mutableListOf<Info>()
+        table.getInfos(n1, n2, infos)
+        infos.reverse()
+        return infos
+    }
+
+    // 回溯
+    private fun Array<Info?>.getInfos(n1: Int, n2: Int, infos: MutableList<Info>) {
+
+        val info2 = this[n2]
+        if (info2 == null) {
+            return
+        } else {
+            infos.add(info2)
+            if (info2.node == n1) {
+                // 如果上一个点的上一个地点是起始地点
+                // 将第二个点加入后就可以返回值
+                return
+            } else {
+                getInfos(n1, info2.node, infos)
             }
         }
     }

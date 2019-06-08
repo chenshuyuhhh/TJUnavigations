@@ -1,40 +1,44 @@
 package com.chenshuyusc.tjunavigations.homeview
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import com.amap.api.location.AMapLocation
-import com.amap.api.maps.model.CustomMapStyleOptions
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
+import cn.edu.twt.retrox.recyclerviewdsl.withItems
 import com.chenshuyusc.tjunavigations.R
-import java.io.IOException
-import java.io.InputStream
-import com.amap.api.location.AMapLocationClientOption
-import com.amap.api.location.AMapLocationClient
-import com.amap.api.location.AMapLocationListener
-import com.amap.api.maps.model.LatLng
-import com.amap.api.maps.*
+import com.chenshuyusc.tjunavigations.model.Graph
+import com.chenshuyusc.tjunavigations.util.ConstValue
+import com.chenshuyusc.tjunavigations.util.EdgeUtils
+import com.chenshuyusc.tjunavigations.util.NodeUtils
+import es.dmoral.toasty.Toasty
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 
-class TJUMapActivity : Activity(), View.OnClickListener, LocationSource,AMapLocationListener {
+class TJUMapActivity : AppCompatActivity() {
 
-    private lateinit var mapView: MapView
-    private lateinit var aMap: AMap
-    private lateinit var basicmap: Button
-    private lateinit var rsmap: Button
-    private lateinit var nightmap: Button
-    private lateinit var navimap: Button
+    private lateinit var begin: EditText
+    private lateinit var end: EditText
+    private lateinit var navigation: ImageView
+    private lateinit var swap: ImageView
+    private lateinit var recyclerView: RecyclerView
+    private var linearLayoutManager = LinearLayoutManager(this)
+    private lateinit var tabLayout: TabLayout
+    private lateinit var viewPager: ViewPager
+    private var viewPagerAdapter: TJUMapPageAdapter = TJUMapPageAdapter(supportFragmentManager)
+    private val list = arrayListOf(ConstValue.WALK, ConstValue.BIKE, ConstValue.DRIVER)
 
-    private lateinit var mStyleCheckbox: CheckBox
+    private var clickP: String = ConstValue.CLICK_BEGIN
 
+    private var isReady = false
 
-    private val mapStyleOptions = CustomMapStyleOptions()
-
-    private var mListener: LocationSource.OnLocationChangedListener? = null
-    private var mlocationClient: AMapLocationClient? = null
-    private lateinit var mLocationOption: AMapLocationClientOption
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,156 +53,134 @@ class TJUMapActivity : Activity(), View.OnClickListener, LocationSource,AMapLoca
         //  MapsInitializer.sdcardDir =OffLineMapUtils.getSdCacheDir(this);
 //        val aOptions = AMapOptions()
 //        aOptions.camera(CameraPosition(centerPoint, 10f, 0f, 0f))
-        mapView = findViewById<View>(R.id.map) as MapView
-     //   mapView = MapView(this,aOptions)
-        mapView.onCreate(savedInstanceState)// 此方法必须重写
+        bindID()
+        //   mapView = MapView(this,aOptions)
 //        mParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
 //                LinearLayout.LayoutParams.MATCH_PARENT)
 //        mContainerLayout.addView(mapView, mParams)
-        init()
+        initView()
 
+        end.setOnClickListener {
+            clickP = ConstValue.CLICK_END
+            showSearch()
+        }
+
+        begin.setOnClickListener {
+            clickP = ConstValue.CLICK_BEGIN
+            showSearch()
+        }
+
+        navigation.setOnClickListener {
+            navigationTry()
+        }
+
+        // 交换起始地点
+        swap.setOnClickListener {
+            val beginText = begin.text.toString()
+            val endText = end.text.toString()
+            begin.setText(endText)
+            end.setText(beginText)
+        }
+        getModelInit()
     }
 
-    /**
-     * 初始化AMap对象
-     */
-    private fun init() {
-        aMap = mapView.map
-        // 设置定位监听
-        aMap.setLocationSource(this)
-        // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
-        aMap.isMyLocationEnabled = true
-        // 设置定位的类型为定位模式，有定位、跟随或地图根据面向方向旋转几种
-        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE)
+    private fun bindID() {
+        begin = findViewById(R.id.begin_place)
+        end = findViewById(R.id.end_place)
+        swap = findViewById(R.id.navigation_swap)
 
+        viewPager = findViewById(R.id.navigation_vp)
+        tabLayout = findViewById(R.id.navigation_tl_tabs)
 
+        navigation = findViewById(R.id.navigation_iv)
+        recyclerView = findViewById(R.id.navigation_rv)
+        recyclerView.layoutManager = linearLayoutManager
 
-        setMapCustomStyleFile(this)
-        basicmap = findViewById<View>(R.id.basicmap) as Button
-        basicmap.setOnClickListener(this)
-        rsmap = findViewById<View>(R.id.rsmap) as Button
-        rsmap.setOnClickListener(this)
-        nightmap = findViewById<View>(R.id.nightmap) as Button
-        nightmap.setOnClickListener(this)
-        navimap = findViewById<View>(R.id.navimap) as Button
-        navimap.setOnClickListener(this)
-
-        val marker1 = LatLng(38.997401,117.311948)
-        //设置中心点和缩放比例
-        aMap.moveCamera(CameraUpdateFactory.changeLatLng(marker1))
-        aMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f))
+        // 刚开始是看到地图，要点击之后才能看到搜索列表
+        showMap()
     }
 
-//    /**
-//    * 监听amap地图加载成功事件回调
-//    */
-//    @Override
-//    public fun onMapLoaded() {
-//        val marker1 = LatLng(38.997401,117.311948)
-//        //设置中心点和缩放比例
-//        aMap.moveCamera(CameraUpdateFactory.changeLatLng(marker1))
-//        aMap.moveCamera(CameraUpdateFactory.zoomTo(14f))
-//    }
+    private fun initView() {
 
-    private fun setMapCustomStyleFile(context: Context) {
-        val styleName = "style_new.data"
-        var inputStream: InputStream? = null
-        try {
-            inputStream = context.assets.open(styleName)
-            val b = ByteArray(inputStream!!.available())
-            inputStream.read(b)
+        viewPager.adapter = viewPagerAdapter
+        viewPager.offscreenPageLimit = 2
+        list.forEach {
+            viewPagerAdapter.addFragment(TJUMapFragment.newInstance(it), it)
+            tabLayout.addTab(tabLayout.newTab().setText(it)) // 设置 tab 的标题
+        }
+        tabLayout.setupWithViewPager(viewPager) // 将 tab 和 viewpager 关联
 
-            // 设置自定义样式
-            mapStyleOptions.styleData = b
+        getSearchList()
+    }
 
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                inputStream?.close()
+    private fun showSearch() {
+        recyclerView.visibility = View.VISIBLE
+        navigation.visibility = View.VISIBLE
+        viewPager.visibility = View.INVISIBLE
+        tabLayout.visibility = View.INVISIBLE
+    }
 
-            } catch (e: IOException) {
-                e.printStackTrace()
+    private fun showMap() {
+        recyclerView.visibility = View.INVISIBLE
+        navigation.visibility = View.INVISIBLE
+        viewPager.visibility = View.VISIBLE
+        tabLayout.visibility = View.VISIBLE
+    }
+
+    private fun getSearchList() {
+        // 开一个协程来完成 rv
+        GlobalScope.launch {
+            recyclerView.withItems {
+                val inputStream = this@TJUMapActivity.resources.openRawResource(R.raw.mytjumap)
+                val bufferedReader = inputStream.bufferedReader(Charsets.UTF_8)
+                val lines = bufferedReader.readLines()
+                lines.forEach {
+                    if (it != lines[0]) {
+                        val strs = it.split(",")
+                        addPlace(strs[3], "${strs[1]},${strs[2]}") { name ->
+                            // 点击之后将名字填充到相应的 ET
+                            when (clickP) {
+                                ConstValue.CLICK_BEGIN -> {
+                                    begin.setText(name)
+                                }
+                                ConstValue.CLICK_END -> {
+                                    end.setText(name)
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
     }
 
-    override fun deactivate() {
-//        mListener = null
-//        if (mlocationClient != null) {
-//            mlocationClient.stopLocation()
-//            mlocationClient.onDestroy()
-//        }
-        mlocationClient = null
-    }
-
-    override fun activate(listener: LocationSource.OnLocationChangedListener) {
-        mListener = listener
-        //初始化定位
-        mlocationClient = AMapLocationClient(this)
-        //初始化定位参数
-        mLocationOption = AMapLocationClientOption()
-        //设置定位回调监听
-//        mlocationClient.setLocationListener(this)
-//        //设置为高精度定位模式
-//        mLocationOption.locationMode = AMapLocationMode.Hight_Accuracy
-//        //设置定位参数
-//        mlocationClient.setLocationOption(mLocationOption)
-//        // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-//        // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
-//        // 在定位结束后，在合适的生命周期调用onDestroy()方法
-//        // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
-//        mlocationClient.startLocation()//启动定位
-
-    }
-
-    override fun onLocationChanged(p0: AMapLocation?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    /**
-     * 方法必须重写
-     */
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    /**
-     * 方法必须重写
-     */
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    /**
-     * 方法必须重写
-     */
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
-    }
-
-    /**
-     * 方法必须重写
-     */
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
-    }
-
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.basicmap -> aMap.mapType = AMap.MAP_TYPE_NORMAL// 矢量地图模式
-            R.id.rsmap -> aMap.mapType = AMap.MAP_TYPE_SATELLITE// 卫星地图模式
-            R.id.nightmap -> aMap.mapType = AMap.MAP_TYPE_NIGHT//夜景地图模式
-            R.id.navimap -> aMap.mapType = AMap.MAP_TYPE_NAVI//导航地图模式
+    fun getModelInit() {
+        navigation.visibility = View.INVISIBLE
+        GlobalScope.launch {
+            isReady = GlobalScope.async {
+                val inputStream0 = this@TJUMapActivity.resources.openRawResource(R.raw.mytjumap)
+                val bufferedReader0 = inputStream0.bufferedReader(Charsets.UTF_8)
+                val lines0 = bufferedReader0.readLines()
+                NodeUtils.getNodes(lines0)
+                val inputStream1 = this@TJUMapActivity.resources.openRawResource(R.raw.edges)
+                val bufferedReader1 = inputStream1.bufferedReader(Charsets.UTF_8)
+                val lines1 = bufferedReader1.readLines()
+                EdgeUtils.getEdges(lines1)
+                Graph.get()
+            }.await()
+            navigation.visibility = View.VISIBLE
         }
-
-        mStyleCheckbox.isChecked = false
     }
 
+    private fun navigationTry() {
+        val beginText = begin.text.toString()
+        val endText = end.text.toString()
+        if (beginText == endText) {
+            Toasty.warning(this, "起始地点不能相同哦～", Toast.LENGTH_LONG, true).show()
+        } else {
+            // 首先是展示地图
+            showMap()
+            viewPagerAdapter.getNavigation(beginText, endText)
+        }
+    }
 }

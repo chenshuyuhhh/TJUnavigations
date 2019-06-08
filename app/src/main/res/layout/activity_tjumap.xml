@@ -18,7 +18,8 @@
 			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintTop_toTopOf="parent"
 			android:layout_marginTop="12dp"
-			android:layout_marginStart="60dp"/>
+			android:layout_marginStart="60dp"
+			android:focusable="false"/>
 	
 	<ImageView
 			android:id="@+id/begin_iv"
@@ -43,7 +44,8 @@
 			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/begin_place"
 			android:layout_marginTop="5dp"
-			android:layout_marginStart="60dp"/>
+			android:layout_marginStart="60dp"
+			android:focusable="false"/>
 	
 	<ImageView
 			android:id="@+id/end_iv"
@@ -57,6 +59,7 @@
 			android:layout_marginStart="16dp"/>
 	
 	<ImageView
+			android:id="@+id/navigation_swap"
 			android:layout_width="50dp"
 			android:layout_height="64dp"
 			android:src="@drawable/ic_swap"
@@ -79,7 +82,7 @@
 			app:layout_constraintTop_toBottomOf="@id/end_place"/>
 	
 	<android.support.v4.view.ViewPager
-			android:id="@+id/job_home_vp_content"
+			android:id="@+id/navigation_vp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			app:layout_constraintTop_toBottomOf="@id/navigation_tl_tabs"/>
@@ -96,13 +99,14 @@
 	</android.support.v7.widget.RecyclerView>
 	
 	<ImageView
+			android:id="@+id/navigation_iv"
 			android:layout_width="80dp"
 			android:layout_height="80dp"
-			app:layout_constraintLeft_toLeftOf="parent"
-			android:layout_marginLeft="100dp"
+			app:layout_constraintRight_toRightOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent"
-			android:layout_marginStart="100dp"
-			android:layout_marginBottom="70dp"
-			android:src="@drawable/ic_navigation2"/>
+			android:layout_marginBottom="50dp"
+			android:layout_marginRight="50dp"
+			android:src="@drawable/ic_navogation2"
+			android:layout_marginEnd="50dp"/>
 
 </android.support.constraint.ConstraintLayout>

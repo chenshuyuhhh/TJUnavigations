@@ -1,11 +1,12 @@
 package com.chenshuyusc.tjunavigations.util
 
+import android.app.Activity
 import android.util.Log
+import com.chenshuyusc.tjunavigations.R
 import com.chenshuyusc.tjunavigations.entity.Edge
 import com.chenshuyusc.tjunavigations.entity.EdgeInfo
 import com.chenshuyusc.tjunavigations.util.ConstValue.CAR
 import com.chenshuyusc.tjunavigations.util.ConstValue.WALKONLY
-import java.io.File
 
 /**
  * 边
@@ -14,8 +15,7 @@ object EdgeUtils {
 
     val edges = arrayListOf<EdgeInfo>()
 
-    init {
-        val lines = File("app/src/main/res/raw/edges.csv").readLines(Charsets.UTF_8)
+    fun getEdges(lines:List<String>){
         lines.forEach { line ->
             val strs = line.split(",")
             val node1 = NodeUtils.getNodeByNumber(strs[1].toInt())
@@ -30,11 +30,27 @@ object EdgeUtils {
         }
     }
 
+//    init {
+//        val lines = File("app/src/main/res/raw/edges.csv").readLines(Charsets.UTF_8)
+//        lines.forEach { line ->
+//            val strs = line.split(",")
+//            val node1 = NodeUtils.getNodeByNumber(strs[1].toInt())
+//            val node2 = NodeUtils.getNodeByNumber(strs[2].toInt())
+//            if (node1 != null && node2 != null) {
+//                edges.add(
+//                    EdgeInfo(strs[0], node1, node2, strs[3], strs[4])
+//                )
+//            } else {
+//                Log.d("ERROR", "node no exist")
+//            }
+//        }
+//    }
+
     /**
      * 获得所有连通的边
      * 最后一个参数是指车辆可以通过，还是只有步行能够通过
      * 由于每获得一次距离需要发一次网络请求，所以这个函数单独运行，生成csv文件保存网络请求的信息
-     * 可以看 res/raw/mark.pdf 里面标注的边信息，黄色线为只有步行能够通过
+     * 可以看 res/raw/marker.pdf 里面标注的边信息，黄色线为只有步行能够通过
      * 每个点的信息在 mytjumap.csv 中
      */
     @JvmStatic
@@ -58,15 +74,16 @@ object EdgeUtils {
         Edge(74, 25, CAR)
         Edge(28, 29, CAR)
         Edge(29, 19, CAR)
-        Edge(19, 32, CAR)
-        Edge(32, 18, CAR)
+        Edge(19, 22, CAR)
+        Edge(22, 18, CAR)
         Edge(7, 11, WALKONLY)
         Edge(11, 29, CAR)
         Edge(31, 32, CAR)
         Edge(32, 19, CAR)
-        Edge(32, 16, WALKONLY)
+        Edge(22, 16, WALKONLY)
         Edge(15, 16, CAR)
         Edge(15, 8, CAR)
+        Edge(15, 32, WALKONLY)
         Edge(16, 17, WALKONLY)
         Edge(17, 18, WALKONLY)
         Edge(17, 13, WALKONLY)
@@ -97,7 +114,7 @@ object EdgeUtils {
         Edge(39, 40, CAR)
         Edge(24, 36, WALKONLY)
         Edge(29, 37, CAR)
-        Edge(32, 23, CAR)
+        Edge(22, 23, CAR)
         Edge(18, 45, CAR)
         Edge(76, 77, CAR)
         Edge(75, 62, CAR)

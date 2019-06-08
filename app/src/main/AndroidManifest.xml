@@ -8,7 +8,7 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
 
         <!--开发者申请的key-->
         <meta-data android:name="com.amap.api.v2.apikey" android:value="d391c49ef2d329c32ecb7cd12eedfd1d">

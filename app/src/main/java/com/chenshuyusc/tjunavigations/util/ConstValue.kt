@@ -8,4 +8,10 @@ object ConstValue {
     val DISTANCEERROR = "DISTANCE_ERROR"
     val CAR = "CAR"
     val WALKONLY = "ONLY_WALK"
+    val ARG_KIND = "ARG_KIND"
+    val WALK = "步行"
+    val BIKE = "骑行"
+    val DRIVER = "驾驶"
+    val CLICK_END = "CLICK_END"
+    val CLICK_BEGIN = "CLICK_BEGIN"
 }
