@@ -4,4 +4,8 @@
     <string name="notifyMsg">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。</string>
     <string name="setting">设置</string>
     <string name="cancel">取消</string>
+	<string name="standard">标准地图</string>
+    <string name="rsmap">卫星地图</string>
+    <string name="nightmap">夜间模式</string>
+    <string name="navimap">导航模式</string>
 </resources>

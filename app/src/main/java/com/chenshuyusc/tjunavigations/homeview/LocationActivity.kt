@@ -1,14 +1,10 @@
-package com.chenshuyusc.tjunavigations.home
+package com.chenshuyusc.tjunavigations.homeview
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import com.amap.api.maps.MapView
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.model.LatLng
-import com.amap.api.maps.model.LatLngBounds
-import com.amap.api.maps.model.MarkerOptions
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationListener
 import com.amap.api.location.AMapLocationClientOption
@@ -24,15 +20,15 @@ import com.chenshuyusc.tjunavigations.R
  * @文件名称：PermissionsChecker.java
  * @类型名称：PermissionsChecker
  */
-class MainActivity : AppCompatActivity() {
+class LocationActivity : AppCompatActivity() {
 
     private lateinit var mMapView: MapView
     private lateinit var aMap: AMap
 
-    // 西南坐标
-    private val southwestLatLng = LatLng(39.674949, 115.932873)
-    // 东北坐标
-    private val northeastLatLng = LatLng(40.159453, 116.767834)
+//    // 西南坐标
+//    private val southwestLatLng = LatLng(39.674949, 115.932873)
+//    // 东北坐标
+//    private val northeastLatLng = LatLng(40.159453, 116.767834)
 
     //声明AMapLocationClient类对象
     private lateinit var locationClient: AMapLocationClient
@@ -49,10 +45,10 @@ class MainActivity : AppCompatActivity() {
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState)
         //初始化地图控制器对象
-        init()
+        aMap = mMapView.map
 
-        aMap.addMarker(MarkerOptions().position(southwestLatLng))
-        aMap.addMarker(MarkerOptions().position(northeastLatLng))
+//        aMap.addMarker(MarkerOptions().position(southwestLatLng))
+//        aMap.addMarker(MarkerOptions().position(northeastLatLng))
 
         aMap.moveCamera(CameraUpdateFactory.zoomTo(8f))
 
@@ -70,32 +66,23 @@ class MainActivity : AppCompatActivity() {
         option.locationMode = AMapLocationClientOption.AMapLocationMode.Hight_Accuracy
         //设置定位模式为AMapLocationMode.Battery_Saving，低功耗模式。
         option.locationMode = AMapLocationClientOption.AMapLocationMode.Battery_Saving
-        if (null != locationClient) {
-            locationClient.setLocationOption(option)
-            //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
-            locationClient.stopLocation()
-            locationClient.startLocation()
-        }
-    }
 
-    /**
-     * 初始化AMap对象
-     */
-    private fun init() {
-        if (aMap == null) {
-            aMap = mMapView.map
-        }
-    }
-
-    /**
-     * 设置限制区域
-     * @param view
-     */
-    fun set(view: View) {
-        val latLngBounds = LatLngBounds(southwestLatLng, northeastLatLng)
-        aMap.setMapStatusLimits(latLngBounds)
+        locationClient.setLocationOption(option)
+        //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
+        locationClient.stopLocation()
+        locationClient.startLocation()
 
     }
+
+//    /**
+//     * 设置限制区域
+//     * @param view
+//     */
+//    fun set(view: View) {
+//        val latLngBounds = LatLngBounds(southwestLatLng, northeastLatLng)
+//        aMap.setMapStatusLimits(latLngBounds)
+//
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

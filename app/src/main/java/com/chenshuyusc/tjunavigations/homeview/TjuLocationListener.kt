@@ -1,4 +1,4 @@
-package com.chenshuyusc.tjunavigations.home
+package com.chenshuyusc.tjunavigations.homeview
 
 import com.amap.api.location.AMapLocation
 import com.amap.api.location.AMapLocationListener

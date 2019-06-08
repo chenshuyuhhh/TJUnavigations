@@ -14,7 +14,7 @@
         <meta-data android:name="com.amap.api.v2.apikey" android:value="d391c49ef2d329c32ecb7cd12eedfd1d">
         </meta-data>
 
-        <activity android:name=".home.MainActivity">
+        <activity android:name=".homeview.TJUMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
