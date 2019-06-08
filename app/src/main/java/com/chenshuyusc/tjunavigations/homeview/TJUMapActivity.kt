@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import cn.edu.twt.retrox.recyclerviewdsl.withItems
 import com.chenshuyusc.tjunavigations.R
+import com.chenshuyusc.tjunavigations.base.NoScrollViewPager
 import com.chenshuyusc.tjunavigations.model.Graph
 import com.chenshuyusc.tjunavigations.util.ConstValue
 import com.chenshuyusc.tjunavigations.util.EdgeUtils
@@ -31,7 +32,7 @@ class TJUMapActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private var linearLayoutManager = LinearLayoutManager(this)
     private lateinit var tabLayout: TabLayout
-    private lateinit var viewPager: ViewPager
+    private lateinit var viewPager: NoScrollViewPager
     private var viewPagerAdapter: TJUMapPageAdapter = TJUMapPageAdapter(supportFragmentManager)
     private val list = arrayListOf(ConstValue.WALK, ConstValue.BIKE, ConstValue.DRIVER)
 
@@ -89,7 +90,7 @@ class TJUMapActivity : AppCompatActivity() {
         end = findViewById(R.id.end_place)
         swap = findViewById(R.id.navigation_swap)
 
-        viewPager = findViewById(R.id.navigation_vp)
+        viewPager = findViewById<NoScrollViewPager>(R.id.navigation_vp)
         tabLayout = findViewById(R.id.navigation_tl_tabs)
 
         navigation = findViewById(R.id.navigation_iv)
