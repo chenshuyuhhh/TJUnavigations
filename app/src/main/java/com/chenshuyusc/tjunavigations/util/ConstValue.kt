@@ -14,4 +14,5 @@ object ConstValue {
     val DRIVER = "驾驶"
     val CLICK_END = "CLICK_END"
     val CLICK_BEGIN = "CLICK_BEGIN"
+    val NORMAL = "NORMAL_MARKER"
 }

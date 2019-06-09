@@ -27,6 +27,7 @@ import com.chenshuyusc.tjunavigations.entity.Node
 import com.chenshuyusc.tjunavigations.util.ConstValue.ARG_KIND
 import com.chenshuyusc.tjunavigations.util.ConstValue.CLICK_BEGIN
 import com.chenshuyusc.tjunavigations.util.ConstValue.CLICK_END
+import com.chenshuyusc.tjunavigations.util.ConstValue.NORMAL
 import com.chenshuyusc.tjunavigations.util.NodeUtils
 import es.dmoral.toasty.Toasty
 import java.io.IOException
@@ -266,7 +267,7 @@ class TJUMapFragment : Fragment(),
         val node1 = NodeUtils.getNodeByNumber(n1)
         // 绘制起点
         node1?.drawMarker(CLICK_BEGIN)
-        str.append("${node1?.name}--")
+        str.append("${node1?.name}-- ")
 
         // 绘制线
         val latLngs = arrayListOf<LatLng>()
@@ -277,9 +278,10 @@ class TJUMapFragment : Fragment(),
                 val ll = tempNode.location.split(",")
                 latLngs.add(LatLng(ll[1].toDouble(), ll[0].toDouble()))
                 if (i == 0) {
-                    str.append("${nstemp.w} --> ")
+                    str.append("${nstemp.w} m --> ")
                 } else {
-                    str.append("${tempNode.name} --> ${nstemp.w - ns[i - 1].w} m --> ")
+                    str.append("${tempNode.name} --> ${nstemp.w - ns[i - 1].w} m -- ")
+                    it.drawMarker(NORMAL)
                 }
             }
             time += nstemp.t
@@ -290,7 +292,7 @@ class TJUMapFragment : Fragment(),
             val latlng = LatLng(ll[1].toDouble(), ll[0].toDouble())
             latLngs.add(latlng)
 
-            str.append("${it.name}\n总时长：$time s")
+            str.append("${it.name}\n总路程：${ns.last().w} m\n总时长：$time s")
 
             // 绘制终点
             it.drawMarker(CLICK_END)
@@ -332,6 +334,11 @@ class TJUMapFragment : Fragment(),
                     BitmapFactory.decodeResource(resources, R.drawable.ic_begin).changeSize()
                 )
             )
+            NORMAL -> markerOption.icon(
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_normal1).changeSize()
+                )
+            )
         }
         // 将Marker设置为贴地显示，可以双指下拉地图查看效果
         markerOption.isFlat = true//设置marker平贴地图效果
@@ -340,8 +347,8 @@ class TJUMapFragment : Fragment(),
 
     private fun Bitmap.changeSize(): Bitmap {
         //设置想要的大小
-        val newWidth = 90
-        val newHeight = 90
+        val newWidth = 100
+        val newHeight = 100
 
         //计算压缩的比率
         val scaleWidth = newWidth.toFloat() / width
