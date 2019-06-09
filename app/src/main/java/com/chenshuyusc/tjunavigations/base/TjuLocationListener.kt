@@ -1,14 +1,24 @@
-package com.chenshuyusc.tjunavigations.homeview
+package com.chenshuyusc.tjunavigations.base
 
+import android.content.Context
+import android.graphics.BitmapFactory
+import android.widget.Toast
 import com.amap.api.location.AMapLocation
 import com.amap.api.location.AMapLocationListener
 import com.amap.api.location.AMapLocationQualityReport
+import com.amap.api.maps.AMap
+import com.amap.api.maps.model.BitmapDescriptorFactory
+import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.MarkerOptions
+import com.chenshuyusc.tjunavigations.R
+import com.chenshuyusc.tjunavigations.util.ConstValue
 import com.chenshuyusc.tjunavigations.util.LocationUtils
+import es.dmoral.toasty.Toasty
 
 /**
  * 定位监听
  */
-class TjuLocationListener : AMapLocationListener {
+class TjuLocationListener(private val context: Context,private val aMap: AMap) : AMapLocationListener {
 
     override fun onLocationChanged(location: AMapLocation) {
         if (null != location) {
@@ -35,15 +45,17 @@ class TjuLocationListener : AMapLocationListener {
                 sb.append("区            : " + location.district + "\n")
                 sb.append("区域 码   : " + location.adCode + "\n")
                 sb.append("地    址    : " + location.address + "\n")
-                sb.append("兴趣点    : " + location.getPoiName() + "\n")
+                sb.append("兴趣点    : " + location.poiName + "\n")
                 //定位完成的时间
-                sb.append("定位时间: " + LocationUtils.formatUTC(location.getTime(), "yyyy-MM-dd HH:mm:ss") + "\n")
+                sb.append("定位时间: " + LocationUtils.formatUTC(location.time, "yyyy-MM-dd HH:mm:ss") + "\n")
+                draw(location )
             } else {
                 //定位失败
                 sb.append("定位失败" + "\n")
                 sb.append("错误码:" + location.errorCode + "\n")
                 sb.append("错误信息:" + location.errorInfo + "\n")
                 sb.append("错误描述:" + location.locationDetail + "\n")
+                Toasty.error(context,sb,Toast.LENGTH_LONG,true).show()
             }
             sb.append("***定位质量报告***").append("\n")
             sb.append("* WIFI开关：").append(if (location.locationQualityReport.isWifiAble) "开启" else "关闭")
@@ -56,12 +68,11 @@ class TjuLocationListener : AMapLocationListener {
             sb.append("****************").append("\n")
             //定位之后的回调时间
             sb.append("回调时间: " + LocationUtils.formatUTC(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss") + "\n")
-
             //解析定位结果，
             val result = sb.toString()
-           // tvResult.text = result
+            // tvResult.text = result
         } else {
-           // tvResult.text = "定位失败，loc is null"
+            // tvResult.text = "定位失败，loc is null"
         }
     }
 
@@ -80,5 +91,20 @@ class TjuLocationListener : AMapLocationListener {
             AMapLocationQualityReport.GPS_STATUS_NOGPSPERMISSION -> str = "没有GPS定位权限，建议开启gps定位权限"
         }
         return str
+    }
+
+    private fun draw(location: AMapLocation){
+        val markerOption = MarkerOptions()
+        markerOption.position(LatLng(location.latitude,location.longitude))
+        markerOption.title(location.address).snippet("${location.latitude}, ${location.longitude}")
+
+        markerOption.draggable(true)//设置Marker可拖动
+        BitmapDescriptorFactory.fromBitmap(
+            BitmapFactory
+                .decodeResource(context.resources, R.drawable.ic_end)
+        )
+        // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+        markerOption.isFlat = true//设置marker平贴地图效果
+        aMap.addMarker(markerOption)
     }
 }

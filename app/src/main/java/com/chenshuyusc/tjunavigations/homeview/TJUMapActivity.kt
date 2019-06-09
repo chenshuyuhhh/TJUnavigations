@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import cn.edu.twt.retrox.recyclerviewdsl.withItems
 import com.chenshuyusc.tjunavigations.R
+import com.chenshuyusc.tjunavigations.base.CheckPermissionsActivity
 import com.chenshuyusc.tjunavigations.base.NoScrollViewPager
 import com.chenshuyusc.tjunavigations.model.Graph
 import com.chenshuyusc.tjunavigations.util.ConstValue
@@ -23,7 +24,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
-class TJUMapActivity : AppCompatActivity() {
+class TJUMapActivity : CheckPermissionsActivity() {
 
     private lateinit var begin: EditText
     private lateinit var end: EditText
@@ -60,7 +61,7 @@ class TJUMapActivity : AppCompatActivity() {
 //                LinearLayout.LayoutParams.MATCH_PARENT)
 //        mContainerLayout.addView(mapView, mParams)
         initView()
-
+        getModelInit()
         end.setOnClickListener {
             clickP = ConstValue.CLICK_END
             showSearch()
@@ -81,8 +82,8 @@ class TJUMapActivity : AppCompatActivity() {
             val endText = end.text.toString()
             begin.setText(endText)
             end.setText(beginText)
+            navigation.visibility = View.VISIBLE
         }
-        getModelInit()
     }
 
     private fun bindID() {
