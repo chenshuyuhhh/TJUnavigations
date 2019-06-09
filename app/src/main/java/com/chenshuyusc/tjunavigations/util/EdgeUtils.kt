@@ -2,11 +2,15 @@ package com.chenshuyusc.tjunavigations.util
 
 import android.app.Activity
 import android.util.Log
+import com.amap.api.maps.AMap
+import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.PolylineOptions
 import com.chenshuyusc.tjunavigations.R
 import com.chenshuyusc.tjunavigations.entity.Edge
 import com.chenshuyusc.tjunavigations.entity.EdgeInfo
 import com.chenshuyusc.tjunavigations.util.ConstValue.CAR
 import com.chenshuyusc.tjunavigations.util.ConstValue.WALKONLY
+import java.io.File
 
 /**
  * 边
@@ -98,8 +102,8 @@ object EdgeUtils {
         Edge(75, 77, CAR)
         Edge(77, 35, CAR)
         Edge(35, 4, CAR)
-        Edge(35, 24, WALKONLY)
-        Edge(28, 24, WALKONLY)
+        Edge(35, 34, WALKONLY)
+        Edge(28, 34, WALKONLY)
         Edge(35, 33, CAR)
         Edge(62, 76, CAR)
         Edge(76, 24, CAR)
@@ -112,7 +116,7 @@ object EdgeUtils {
         Edge(20, 45, CAR)
         Edge(45, 39, CAR)
         Edge(39, 40, CAR)
-        Edge(24, 36, WALKONLY)
+        Edge(34, 36, WALKONLY)
         Edge(29, 37, CAR)
         Edge(22, 23, CAR)
         Edge(18, 45, CAR)

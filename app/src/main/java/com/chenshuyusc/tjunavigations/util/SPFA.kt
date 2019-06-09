@@ -28,12 +28,19 @@ object SPFA {
 //    }
 
     /**
+     * map 为一个邻接矩阵的存储，key存的是结点，value存的是和这个结点相邻的所有结点以及路径所购成的小 map
+     */
+
+    /**
      * 邻接矩阵
      * n1：起始点
      * n2：结束点
      */
     fun getPaths(map: HashMap<Node, HashMap<Node, String>>, n1: Int, n2: Int): List<Info> {
 
+        /**
+         * map 为一个邻接矩阵的存储，key存的是结点，value存的是和这个结点相邻的所有结点以及路径所购成的小 map
+         */
         // 权重记录表
         val table = arrayOfNulls<Info>(108)
 

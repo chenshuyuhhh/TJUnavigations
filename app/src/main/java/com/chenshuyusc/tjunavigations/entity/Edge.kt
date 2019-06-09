@@ -24,10 +24,10 @@ class Edge(private val n1: Int, private val n2: Int, private val p: String) {
         private set
 
     init {
-        getDistance()
+        getDistance(p)
     }
 
-    private fun getDistance() {
+    private fun getDistance(p: String) {
         if (node1 != null && node2 != null) {
             GlobalScope.launch(Dispatchers.Unconfined) {
                 RetrofitFactory.api.getDistance(ConstValue.KEY, node1.location, node2.location).awaitAndHandle {
@@ -38,7 +38,9 @@ class Edge(private val n1: Int, private val n2: Int, private val p: String) {
                 }?.let {
                     distance = it.route.paths[0].distance.toDouble()
                     time = it.route.paths[0].duration.toDouble()
-                    println("$p,${node1.number},${node2.number},$distance")
+                    if (p == ConstValue.WALKONLY) {
+                        println("${node1.name},${node1.location},${node2.name},${node2.location}")
+                    }
                     File("app/src/main/res/raw/edges.csv").appendText(
                         "$p,${node1.number},${node2.number},$distance,$time\n",
                         Charsets.UTF_8

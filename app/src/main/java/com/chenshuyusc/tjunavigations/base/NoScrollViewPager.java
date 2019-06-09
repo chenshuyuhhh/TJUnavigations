@@ -5,6 +5,9 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+/**
+ * 不能左右滑动的 ViewPager，防止和地图滑动冲突
+ */
 public class NoScrollViewPager extends ViewPager {
     private boolean isCanScroll = false;
 

@@ -30,7 +30,6 @@ class TJUMapPageAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
             fragment.getNavigation(n1, n2)
         }
     }
-
 //    fun updateFragment(position: Int) {
 //        try {
 //            (fragmentsOfHome[position] as TJUMapPageAdapter)

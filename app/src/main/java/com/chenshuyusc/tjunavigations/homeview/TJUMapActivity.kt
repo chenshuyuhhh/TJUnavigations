@@ -129,6 +129,9 @@ class TJUMapActivity : CheckPermissionsActivity() {
         tabLayout.visibility = View.VISIBLE
     }
 
+    /**
+     * 获得搜索列表
+     */
     private fun getSearchList() {
         // 开一个协程来完成 rv
         GlobalScope.launch {

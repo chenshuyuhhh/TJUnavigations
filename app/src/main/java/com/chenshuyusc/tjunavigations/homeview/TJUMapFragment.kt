@@ -29,6 +29,7 @@ import com.chenshuyusc.tjunavigations.util.ConstValue.CLICK_BEGIN
 import com.chenshuyusc.tjunavigations.util.ConstValue.CLICK_END
 import com.chenshuyusc.tjunavigations.util.ConstValue.NORMAL
 import com.chenshuyusc.tjunavigations.util.NodeUtils
+import com.chenshuyusc.tjunavigations.util.changeSize
 import es.dmoral.toasty.Toasty
 import java.io.IOException
 import java.io.InputStream
@@ -90,7 +91,7 @@ class TJUMapFragment : Fragment(),
         // ------- 地图 ------- //
         aMap = mapView.map
 
-        locationListener = TjuLocationListener(context!!,aMap)
+        locationListener = TjuLocationListener(context!!, aMap)
         // 设置定位监听
         // 请在主线程中声明AMapLocationClient类对象，需要传Context类型的参数。推荐用getApplicationContext()方法获取全进程有效的context。
         //初始化定位
@@ -135,6 +136,7 @@ class TJUMapFragment : Fragment(),
         //设置中心点和缩放比例
         aMap.moveCamera(CameraUpdateFactory.changeLatLng(marker1))
         aMap.moveCamera(CameraUpdateFactory.zoomTo(16.5f))
+        drawPath()
     }
 
 
@@ -313,6 +315,7 @@ class TJUMapFragment : Fragment(),
         Toasty.error(context!!, "抱歉，${kind}方式在北洋园校区内不能达到", Toast.LENGTH_LONG, true).show()
     }
 
+    // 封装根据结点特征在地图上标点的方法
     private fun Node.drawMarker(p: String) {
         val ll = this.location.split(",")
         val latlng = LatLng(ll[1].toDouble(), ll[0].toDouble())
@@ -326,17 +329,17 @@ class TJUMapFragment : Fragment(),
             CLICK_END -> markerOption.icon(
                 BitmapDescriptorFactory.fromBitmap(
                     BitmapFactory
-                        .decodeResource(resources, R.drawable.ic_end).changeSize()
+                        .decodeResource(resources, R.drawable.ic_end).changeSize(106f)
                 )
             )
             CLICK_BEGIN -> markerOption.icon(
                 BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(resources, R.drawable.ic_begin).changeSize()
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_begin).changeSize(106f)
                 )
             )
             NORMAL -> markerOption.icon(
                 BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(resources, R.drawable.ic_normal1).changeSize()
+                    BitmapFactory.decodeResource(resources, R.drawable.ic_normal1).changeSize(96f)
                 )
             )
         }
@@ -345,19 +348,50 @@ class TJUMapFragment : Fragment(),
         aMap.addMarker(markerOption)
     }
 
-    private fun Bitmap.changeSize(): Bitmap {
-        //设置想要的大小
-        val newWidth = 100
-        val newHeight = 100
+    private fun drawPath() {
+        val inputStream0 = activity!!.resources.openRawResource(R.raw.onlywalk)
+        val bufferedReader0 = inputStream0.bufferedReader(Charsets.UTF_8)
+        val lines = bufferedReader0.readLines()
+        lines.forEach { line ->
+            val strs = line.split(",")
 
-        //计算压缩的比率
-        val scaleWidth = newWidth.toFloat() / width
-        val scaleHeight = newHeight.toFloat() / height
+            val latLngs = mutableListOf<LatLng>()
+            val l1 = LatLng(strs[2].toDouble(), strs[1].toDouble())
+            val l2 = LatLng(strs[5].toDouble(), strs[4].toDouble())
+            latLngs.add(l1)
+            latLngs.add(l2)
+            val polyline = aMap.addPolyline(
+                PolylineOptions().addAll(latLngs).width(10f).color(activity!!.resources.getColor(R.color.red))
+            )
+            polyline.isVisible = true
 
-        val matrix = Matrix()
-        matrix.postScale(scaleWidth, scaleHeight)
+            val markerOption1 = MarkerOptions()
+            markerOption1.position(l1)
+            markerOption1.title(strs[0]).snippet("${strs[2]},${strs[1]}")
+            markerOption1.icon(
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory
+                        .decodeResource(activity!!.resources, R.drawable.ic_only_walk).changeSize(40f)
+                )
+            )
+            // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+            markerOption1.isFlat = true//设置marker平贴地图效果
 
-        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+            val markerOption2 = MarkerOptions()
+            markerOption2.position(l2)
+            markerOption2.title(strs[3]).snippet("${strs[5]},${strs[4]}")
+            markerOption2.icon(
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory
+                        .decodeResource(activity!!.resources, R.drawable.ic_only_walk).changeSize(40f)
+                )
+            )
+            // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+            markerOption2.isFlat = true//设置marker平贴地图效果
+
+            aMap.addMarker(markerOption1)
+            aMap.addMarker(markerOption2)
+        }
     }
 
     /**
@@ -377,5 +411,4 @@ class TJUMapFragment : Fragment(),
             option = null
         }
     }
-
 }

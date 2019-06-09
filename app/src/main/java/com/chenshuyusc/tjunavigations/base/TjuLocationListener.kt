@@ -51,11 +51,11 @@ class TjuLocationListener(private val context: Context,private val aMap: AMap) :
                 draw(location )
             } else {
                 //定位失败
-                sb.append("定位失败" + "\n")
-                sb.append("错误码:" + location.errorCode + "\n")
-                sb.append("错误信息:" + location.errorInfo + "\n")
-                sb.append("错误描述:" + location.locationDetail + "\n")
-                Toasty.error(context,sb,Toast.LENGTH_LONG,true).show()
+//                sb.append("定位失败" + "\n")
+//              //  sb.append("错误码:" + location.errorCode + "\n")
+//                sb.append("错误信息:" + location.errorInfo + "\n")
+//               // sb.append("错误描述:" + location.locationDetail + "\n")
+//                Toasty.error(context,sb,Toast.LENGTH_LONG,true).show()
             }
             sb.append("***定位质量报告***").append("\n")
             sb.append("* WIFI开关：").append(if (location.locationQualityReport.isWifiAble) "开启" else "关闭")
